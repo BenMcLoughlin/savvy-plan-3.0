@@ -5,9 +5,11 @@ import {connect} from "react-redux"
 import { ArrowLeftS} from "@styled-icons/remix-line"
 
 
-function Back({label, name, reducer, setKeyValue_action, value}) {
+function Back({label, name, reducer, setKeyValue_action, value, setDirection}) {
     return (
-           < ArrowLeft onClick={() => setKeyValue_action(name, reducer, value)}/>
+           < ArrowLeft onClick={() => { 
+               setDirection("back")
+               setKeyValue_action(name, reducer, value)}}/>
     )
 }
 

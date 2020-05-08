@@ -3,9 +3,12 @@ import styled from "styled-components"
 import Header from "./components/Header"
 import Footer from "./components/Footer"
 import Onboard from "./pages/Onboard"
+import {ThemeProvider} from "styled-components"
+import {theme} from "styles/theme"
 
 function App() {
   return (
+    <ThemeProvider theme={theme}>
     <Wrapper>
       <Header/>
         <Content>
@@ -13,6 +16,7 @@ function App() {
         </Content>
       <Footer/>
     </Wrapper>
+    </ThemeProvider>
   );
 }
 
@@ -25,7 +29,7 @@ const Wrapper = styled.div`
   width: 100%;
 `
 const Content = styled.div`
-  background: #FCFAFC;
+  background: #f9f9f9;
   height: 80rem;
   width: 100%;
 `

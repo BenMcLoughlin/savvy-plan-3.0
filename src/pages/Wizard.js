@@ -2,51 +2,61 @@ import React, {useEffect} from 'react'
 import styled from "styled-components"
 import Button from "components/Button"
 import TextInput from "components/TextInput"
-import Select from "components/Select"
+import Form from "components/Form"
+import _ from "lodash"
+import MultiSelect from "components/MultiSelect"
+import CumulativeSelect from "components/CumulativeSelect"
+import NumberSelect from "components/NumberSelect"
+import DualSelect from "components/DualSelect"
+import Slider from "components/Slider"
 import {connect} from "react-redux"
 import {setKeyValue_action} from "redux/actions"
-import Back from "components/Back"
-import Next from "components/Next"
-
+ 
  function Wizard(props) {                                                                                                                         //since we're passing props straight on to the inputs we don't want to destructure here
 
-    const {title, name, component, why, ask, subTitle, user_reducer, progress, condition, conditionalProps1, conditionalProps2} = props
+    const {title, name, component, subTitle, user_reducer, progress, condition, conditionalProps1, conditionalProps2, setPosition} = props
+
+    useEffect(() => {
+        setPosition(progress)
+    })
+
 
     return (
         <Wrapper>
             <Header>
                 <h1>{title}</h1>
-                <p>{subTitle}</p>
+                <h3>{subTitle}</h3>
             </Header>
-            <Text>
-                <h3>{why}</h3>
-                <p>{ask}</p>
-            </Text>
             <Content>
                 {
                     component === "Button" ?  <Button {...props}/> :
-                    component === "TextInput" ?  <TextInput {...props}/> :
-                    component === "Select"  ?  <Select {...props}/> :
-                    component === "Select" ?  <Select {...props}/> :
+                    component === "TextInput"  ?  <TextInput {...props}/> :
+                    component === "MultiSelect"  ?  <MultiSelect {...props}/> :
+                    component === "CumulativeSelect"  ?  <CumulativeSelect {...props}/> :
+                    component === "NumberSelect"  ?  <NumberSelect {...props}/> :
+                    component === "Slider" ?  <Slider {...props}/> :
+                    component === "twoSliders" ? 
+                                                < Row>
+                                                    <Slider {...props.props1}/> 
+                                                    <Slider {...props.props2}/> 
+                                                </ Row> :
+                    component === "DualSelect" ?  <DualSelect {...props}/> :
+                    component === "Form" ?  <Form {...props}/> :
                     null
                 }
                 {
-                condition === user_reducer[name] ? <Condition>
-                                                       <TextInput {...conditionalProps1}/>
-                                                       <TextInput {...conditionalProps2}/>
-                                                  </Condition> : null
+                name === "numberOfChildren" ? <Children>
+                                                    {
+                                                       _.range(1, user_reducer.numberOfChildren + 1).map(d =>  <TextInput name={`child${d}BirthYear`} reducer={"user_reducer"}/>
+                                                    )
+                                                    }
+                                             </Children>
+                
+                : null
                 }
             </Content>
 
-                       <Back  name="progress"
-                            reducer="ui_reducer"
-                            value={progress  > 0 ? progress - 1 : 1}
-                        />
-                      <Next name="progress"
-                            reducer="ui_reducer"
-                            valid={user_reducer[name]}
-                            value={progress  < 10 ? progress + 1 : 10}
-                        />
+
         </Wrapper>
     )
 }
@@ -67,38 +77,33 @@ const Wrapper = styled.div`
         flex-direction: column;
         justify-content: space-around;
         margin-top: 10rem;
+        margin-left: -10rem;
 `
 const Header = styled.div`
-        height: 10rem;
+        height: 18rem;
         width: 50rem; 
         display: flex;
         flex-direction: column;
         justify-content: space-around;
 `
-const Condition = styled.div`
-        position: absolute;
-        top: 0;
-        right: -32rem;
-        height: 20rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
+const Row = styled.div`
+       display: flex;
+       width: 40rem;
+       justify-content: space-between;
 `
 
-const Text = styled.div`
-        height: 10rem;
-        width: 20rem; 
-        display: flex;
-        flex-direction: column;
-        justify-content: space-around;
-        position: absolute; 
-        left: 10rem;
-        top: 15rem;
-`
 const Content = styled.div`
         height: 30rem;
         width: 30rem; 
         position: relative;
         margin: 0 auto;
+`
+
+const Children = styled.div`
+        min-height: 40rem;
+        width: 30rem; 
+        display: flex;
+        flex-wrap: start;
+        flex-direction: column;
 `
 

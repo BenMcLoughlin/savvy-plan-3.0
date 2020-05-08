@@ -2,18 +2,20 @@ import React from 'react'
 import styled from "styled-components"
 import {connect} from "react-redux"
 import _ from "lodash"
-import {setKeyValue_action} from "redux/actions"
+import {setKeyValue_action, setNestedKeyValue_action} from "redux/actions"
 
-function TextInput ({ name, reducer, state, setKeyValue_action})  {
+function TextInput ({ name, reducer, state, setKeyValue_action, setNestedKeyValue_action, id})  {
 
     const reducerInUse = state[reducer]
     const value = reducerInUse[name]
-console.log('tect input value', value );
+
     return (
         <Wrapper value={value}>
             <Label>{_.startCase(name)}</Label>
                 <Input
-                    onChange={(e) => setKeyValue_action(name, reducer, e.target.value)}
+                    onChange={(e) => {
+                        id ? setNestedKeyValue_action(name, reducer, e.target.value) :
+                             setKeyValue_action(name, reducer, e.target.value)}}
                     value={value}
                 />
         </Wrapper>
@@ -23,13 +25,14 @@ const mapStateToProps = (state) => ({
     state
 })
 
-export default connect(mapStateToProps, {setKeyValue_action})(TextInput)
+export default connect(mapStateToProps, {setKeyValue_action, setNestedKeyValue_action})(TextInput)
 
 //---------------------------STYLES-------------------------------------------//
 
 const Wrapper = styled.div`
     width: 30rem;
     padding: 1rem;
+    margin-top: 1rem;
     height: 9rem;
     position: relative;
     display: flex;
@@ -42,7 +45,7 @@ const Label = styled.label`
     font-size: 1.2rem;
     font-weight: normal;
     pointer-events: none;
-    color: #918F8F;
+    color: ${props => props.theme.color.darkGrey};
     font-weight: 800;
 
 `
@@ -58,7 +61,7 @@ const Input = styled.input`
     height: 5rem;
     border: none;
     border-radius: 3px;
-    color: #CDCCCC;
+    color: ${props => props.theme.color.darkGrey};
 
     &:focus{
         outline: none;

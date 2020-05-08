@@ -2,106 +2,53 @@ import React, {useState} from 'react'
 import styled from "styled-components"
 import ProgressBar from "components/ProgressBar"
 import {connect} from "react-redux"
-
-import Next from "components/Next"
-import Button from "components/Button"
-import TextInput from "components/TextInput"
+import { TransitionGroup, CSSTransition } from "react-transition-group";
 import Wizard from "pages/Wizard"
+import Back from "components/Back"
+import Next from "components/Next"
+import {onboardFlow_data} from "data/onboardFlow"
+
 function Onboard({progress, user_reducer}) {
 
+    const [direction, setDirection] = useState("forward")
+    const [position, setPosition] = useState(0)
 
-    const data = [
-        {
-            title: "Lets build you a financial Plan",
-            subTitle: "We’ll gather some information that will enable us to build a financial plan suited to you.",
-            reducer: "ui_reducer",
-            label: "continue",
-            value: 1,
-            name: "progress",
-            component: "Button",
-            condition: "none"
-        },
-        {
-            title: "What's your first Name?",
-            component: "TextInput",
-            reducer: "user_reducer",
-            name: "firstName",
-            why: "Why we ask",
-            ask: "We'll use this to keep your details seperate from a spouse.",
-        },
-        {
-            title: "What's your Birth Year?",
-            component: "TextInput",
-            reducer: "user_reducer",
-            name: "birthYear",
-            why: "Why we ask",
-            ask: "This forms the basis of our financial calculations.",
-        },
-        {
-            title: "What is your Gender?",
-            component: "Select",
-            reducer: "user_reducer",
-            name: "gender",
-            array: ["male", "female", "prefer not to say", "write below"],
-            why: "Why we ask",
-            ask: "We want to ensure our planning is inclusive.",
-            condition: "none"
-        },
-        {
-            title: "What is your marital status?",
-            component: "Select",
-            reducer: "user_reducer",
-            name: "maritalStatus",
-            array: ["single", "married", "common-law", "write below"],
-            condition: "married",
-            why: "Why we ask",
-            ask: "Having a spouse has a large impact on your plan",
-            conditionalProps1: {
-                title: "What's the first Name of your spouse?",
-                component: "TextInput",
-                reducer: "user_reducer",
-                name: "spousesFistName",
-                 },
-            conditionalProps2: {
-                title: "What's the birth year of your spouse?",
-                component: "TextInput",
-                reducer: "user_reducer",
-                name: "spousesBirthYear",
-                 },
-        },
-        {
-            title: "What's your spouse's first Name?",
-            component: "TextInput",
-            reducer: "user_reducer",
-            name: "spouseFirstName",
-            condition: "married",
-        },
-        {
-            title: "What's your Birth Year?",
-            component: "TextInput",
-            reducer: "user_reducer",
-            name: "spouseBirthYear",
-            condition: "married",
-        },
-        {
-            count: 6, 
-            pageName: "maritalStatus",
-            title: "",
-            component: "TextInput",
-            reducer: "user_reducer",
-            name: "gender",
-            array: [1,2,3,4],
-        },
-    ]
+    const data = onboardFlow_data(user_reducer)
 
     return (
         <Wrapper>
                <ProgressBar/>
+               <Text>
+                <h3>{data[position].why}</h3>
+                <p>{data[position].ask}</p>
+            </Text>
                <Content>
-                   {
-                       data.map((d,i) => i === progress && <Wizard {...d} />)
-                    }
+                    <TransitionGroup component={StyledGrid}>
+                        {
+                            data.map((d,i) => i === progress &&
+                            <CSSTransition key={i} timeout={400} classNames={`transition-${direction}`} setPosition={setPosition}>
+                                            <Wizard {...d} />
+                            </CSSTransition> )
+                            }
+                    </TransitionGroup>
                </Content>
+               {
+                   position > 0 &&
+                   <>
+                        <Back  name="progress"
+                        reducer="ui_reducer"
+                        value={progress  > 0 ? progress - 1 : 1}
+                        setDirection={setDirection}
+                    />
+                    <Next name="progress"
+                        reducer="ui_reducer"
+                        valid={user_reducer[data[position].name]}
+                        value={progress  < 20 ? progress + 1 : 20}
+                        setDirection={setDirection}
+                    />
+                    </>
+               }
+                   
         </Wrapper>
     )
 }
@@ -124,18 +71,9 @@ const Content = styled.div`
         width: 100%; 
         display: flex;
         justify-content: center;
-
 `
-const Header = styled.div`
-        height: 10rem;
-        width: 50rem; 
-        display: flex;
-        flex-direction: column;
-        justify-content: space-around;
-`
-
 const Text = styled.div`
-        height: 10rem;
+        height: 20rem;
         width: 20rem; 
         display: flex;
         flex-direction: column;
@@ -143,12 +81,67 @@ const Text = styled.div`
         position: absolute; 
         left: 10rem;
         top: 15rem;
+        background: yellow;
 `
-const Div = styled.div`
-    height: 20rem;
-    width: 40rem; 
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    margin-top: 10rem;
-`
+const StyledGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 220px);
+  grid-gap: 20px;
+
+  .transition-back-enter {
+        opacity: 0.01;
+        transform: translate(-190px, 0);
+      }
+      .transition-forward-enter {
+        opacity: 0.01;
+        transform: translate(190px, 0);
+      }
+    
+      .transition-forward-enter-active {
+        opacity: 1;
+        transform: translate(0, 0);
+        transition: all 400ms ease-in;
+      }
+      .transition-back-enter-active {
+        opacity: 1;
+        transform: translate(0, 0);
+        transition: all 400ms ease-in;
+      }
+      .transition-back-exit-enter {
+        opacity: 0;
+        display: hidden;
+      }
+      .transition-back-exit-active {
+        opacity: 0;
+        display: hidden;
+      }
+      .transition-forward-exit-enter {
+        opacity: 0;
+        display: hidden;
+      }
+      .transition-forward-exit-active {
+        opacity: 0;
+        display: hidden;
+      }
+`;
+
+
+// .transition-back-enter {
+//     opacity: 0.01;
+//     transform: translate(-30px, 0);
+//   }
+//   .transition-forward-enter {
+//     opacity: 0.01;
+//     transform: translate(30px, 0);
+//   }
+
+//   .transition-forward-enter-active {
+//     opacity: 1;
+//     transform: translate(0, 0);
+//     transition: all 3000ms ease-in;
+//   }
+//   .transition-back-enter-active {
+//     opacity: 1;
+//     transform: translate(0, 0);
+//     transition: all 3000ms ease-in;
+//   }

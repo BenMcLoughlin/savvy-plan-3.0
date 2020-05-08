@@ -4,11 +4,10 @@ import {connect} from "react-redux"
 import _ from "lodash"
 import {setKeyValue_action} from "redux/actions"
 
-function Select ({array, label, name, reducer, state, setKeyValue_action})  {
+function MultiSelect ({array, label, name, reducer, state, setKeyValue_action})  {
     const reducerInUse = state[reducer]
     const value = reducerInUse[name]
     const {user_reducer} = state
-
     return (
         <Wrapper>
             <Label>{_.startCase(label)}</Label>
@@ -32,7 +31,7 @@ const mapStateToProps = (state) => ({
     state
 })
 
-export default connect(mapStateToProps, {setKeyValue_action})(Select)
+export default connect(mapStateToProps, {setKeyValue_action})(MultiSelect)
 
 //---------------------------STYLES-------------------------------------------//
 
@@ -47,7 +46,7 @@ const Label = styled.label`
     font-size: 1.6rem;
     font-weight: normal;
     pointer-events: none;
-    color: #918F8F;
+    color: ${props => props.theme.color.darkGrey};
     font-weight: 800;
 
 `
@@ -68,7 +67,7 @@ const Square = styled.div`
     background: ${props => props.selected ? "#5E9090" : "white"};
     border: 0.5px solid #E0DEDD;
     cursor: pointer;
-    color: ${props => props.selected ?  "white" : "#CDCCCC"};
+    color: ${props => props.selected ?  "white" : "${props => props.theme.color.mediumGrey}"};
 `
 // const LargeSquare = styled(Sqaure)`
 
@@ -86,7 +85,7 @@ const Input = styled.input`
     height: 5rem;
     border: none;
     border-radius: 3px;
-    color: #CDCCCC;
+    color: ${props => props.theme.color.mediumGrey};
 
     &:focus{
         outline: none;

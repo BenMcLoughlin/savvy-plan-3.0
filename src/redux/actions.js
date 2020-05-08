@@ -11,9 +11,12 @@ export const setKeyValue_action = (key, reducer, value) => ({                   
     value
 })
                                
-export const setNestedKeyValue_action = (childKey, parentKey, reducer, value) => ({  //this sets nested key value pair, for instance if I just want to change mini range bar value, which is a nested object
+export const setNestedKeyValue_action = (childKey, parentKey, reducer, value) => {
+ console.log((childKey, parentKey, reducer, value));
+    return   ({  //this sets nested key value pair, for instance if I just want to change mini range bar value, which is a nested object
     type: `${reducer}/SET_NESTED_KEY_VALUE`,
     childKey,                                                                        // child key in the key value pair of the object nested within the parent object, 
     parentKey,                                                                       // parent key is the key to the lower level child object
     value
 })
+}
